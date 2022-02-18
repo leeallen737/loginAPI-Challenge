@@ -11,7 +11,7 @@ const passwordCheck= (value) => {
     if(value.length < 8 || !value.match("^[#a-zA-Z0-9]+$")) {
        return true;
     }else {
-        return false;
+        return value;
     }
 }
 
@@ -19,7 +19,7 @@ const usernameFormValidCheck = (value) => {
     if(!value.includes('@')) {
         return true
     }else {
-        return false
+        return value
     }
 }
 
@@ -36,7 +36,7 @@ form.addEventListener('submit', (e) => {
     console.log(passwordResult)
 
     if(passwordResult === true || checkEmail === true) {
-        console.log(`You need letters etc in you password and email must have '@'`)
+        alert(`You need letters etc in you password and email must have '@'`)
     }else {
         fetch(URL, {
             method: 'POST',
@@ -50,7 +50,6 @@ form.addEventListener('submit', (e) => {
         })
         .then(response => response.json()
         .then(data => {
-            console.log(data.token)
             token = data.token
             
             if(token) {
@@ -60,17 +59,28 @@ form.addEventListener('submit', (e) => {
         }).then(
             fetch(USERS).then(response => {
                 response.json().then(data => {
+
                     
-                    for (let i = 0; i <= data.data.length; i++) {
+                    document.querySelector('body').innerHTML = `<div>INVALID USER!! PLEASE WAIT FOR MORE MEMBERSHIPS TO BECOME AVAILABLE</div>`;
 
-                        if(data.data[i].email === checkEmail) {
+                    data.data.forEach(person => {
+                        if(person.email === checkEmail) {
+                            console.log(person.email)
+                            document.querySelector('body').innerHTML = `<img src='${person.avatar}'><div>You are signed in: ${person.first_name} </div><div>Here is your token: ${token}</div>`;
                             
-                            document.querySelector('body').innerHTML = `<img src='${data.data[i].avatar}'><div>You are signed in: ${data.data[i].first_name} </div><div>Here is your token: ${token}</div>`;
-                        }else {
-                            document.querySelector('body').innerHTML = `<div>INVALID USER!! PLEASE WAIT FOR MORE MEMBERSHIPS TO BECOME AVAILABLE</div>`;
                         }
+                    })
+                    // document.querySelector('body').innerHTML = `<div>INVALID USER!! PLEASE WAIT FOR MORE MEMBERSHIPS TO BECOME AVAILABLE</div>`;
 
-                    }
+                    // for (let i = 0; i < data.data.length; i++) {
+
+                    //     if(data.data[i].email === checkEmail) {
+                    //         console.log(data.data[i].email)
+                    //         document.querySelector('body').innerHTML = `<img src='${data.data[i].avatar}'><div>You are signed in: ${data.data[i].first_name} </div><div>Here is your token: ${token}</div>`;
+                    
+                    //     }
+
+                    // }
                 })
             })
         )
